@@ -15,20 +15,17 @@
 
   <style>
     :root {
-      /* Bioreactor Organic Palette */
       --bg-dark: #040909;
       --bg-gradient: radial-gradient(circle at 50% 0%, #0d2420 0%, #050c0b 60%, #020606 100%);
-      --card-bg: rgba(13, 27, 24, 0.7);
-      --card-hover: rgba(18, 38, 34, 0.85);
-      --border-bio: rgba(20, 184, 166, 0.2);
-      --border-glow: rgba(52, 211, 153, 0.45);
+      --card-bg: rgba(13, 27, 24, 0.75);
+      --card-hover: rgba(18, 38, 34, 0.9);
+      --border-bio: rgba(20, 184, 166, 0.25);
+      --border-glow: rgba(52, 211, 153, 0.5);
       
-      /* Typography */
       --text-main: #f0fdf4;
       --text-sub: #94a3b8;
       --text-dim: #64748b;
 
-      /* Bio-Variables Accents */
       --bio-green: #10b981;
       --bio-teal: #14b8a6;
       --ph-cyan: #38bdf8;
@@ -38,546 +35,115 @@
       --p-pink: #f472b6;
       --k-gold: #facc15;
       
-      /* Status */
       --alert-red: #ef4444;
       --alert-yellow: #f59e0b;
       --alert-green: #10b981;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    body { background: var(--bg-dark); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; padding: 14px; }
+    .dashboard-wrapper { width: 100%; max-width: 1600px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; flex: 1; }
 
-    body {
-      background: var(--bg-dark);
-      background-image: var(--bg-gradient);
-      background-attachment: fixed;
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 16px;
-      overflow-x: hidden;
-    }
+    header { background: rgba(10, 22, 20, 0.7); backdrop-filter: blur(12px); border: 1px solid var(--border-bio); border-radius: 14px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; }
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+    .vessel-icon { width: 38px; height: 38px; background: rgba(20, 184, 166, 0.15); border: 1px solid var(--border-bio); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--bio-green); font-size: 1.2rem; }
+    .brand-title h1 { font-family: 'Space Grotesk', sans-serif; font-size: 1.15rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .brand-title p { font-size: 0.72rem; color: var(--text-sub); }
 
-    /* Fullscreen Wrapper */
-    .dashboard-wrapper {
-      width: 100%;
-      max-width: 1600px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      flex: 1;
-    }
+    .status-pill { display: flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-bio); padding: 6px 14px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--alert-red); box-shadow: 0 0 10px var(--alert-red); }
+    .status-pill.connected .status-dot { background: var(--bio-green); box-shadow: 0 0 12px var(--bio-green); animation: pulse-bio 2s infinite ease-in-out; }
+    @keyframes pulse-bio { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
 
-    /* Header Navigasi Glassmorphism */
-    header {
-      background: rgba(10, 22, 20, 0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-bio);
-      border-radius: 16px;
-      padding: 14px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
+    .nav-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: rgba(6, 15, 13, 0.85); border: 1px solid var(--border-bio); padding: 5px; border-radius: 12px; }
+    .tab-btn { background: transparent; border: none; color: var(--text-sub); padding: 10px; font-size: 0.82rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; text-align: center; }
+    .tab-btn:hover { color: #fff; background: rgba(20, 184, 166, 0.1); }
+    .tab-btn.active { background: linear-gradient(135deg, rgba(20, 184, 166, 0.3), rgba(16, 185, 129, 0.2)); color: #fff; border: 1px solid var(--border-glow); }
 
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+    .tab-panel { display: none; flex-direction: column; gap: 12px; width: 100%; }
+    .tab-panel.active { display: flex; }
 
-    .vessel-icon {
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(16, 185, 129, 0.1));
-      border: 1px solid var(--border-bio);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--bio-green);
-      font-size: 1.25rem;
-    }
+    .bio-quality-banner { background: var(--card-bg); border: 1px solid var(--border-bio); border-radius: 14px; padding: 14px 18px; display: flex; flex-direction: column; gap: 8px; }
+    .quality-meta { display: flex; justify-content: space-between; align-items: center; }
+    .quality-title { font-size: 0.82rem; font-weight: 600; color: var(--text-sub); }
+    .quality-verdict { font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--bio-green); }
+    .biotrack { position: relative; height: 12px; border-radius: 999px; background: linear-gradient(to right, #ef4444 0%, #f59e0b 45%, #10b981 85%); margin: 6px 0; }
+    .biotrack-indicator { position: absolute; top: -5px; width: 22px; height: 22px; background: #fff; border: 3px solid #061714; border-radius: 50%; transform: translateX(-50%); transition: left 0.5s ease; left: 0%; box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+    .biotrack-ticks { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-dim); }
 
-    .brand-title h1 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; width: 100%; }
+    .bio-card { background: var(--card-bg); border: 1px solid var(--border-bio); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; transition: 0.2s; }
+    .bio-card:hover { background: var(--card-hover); border-color: var(--border-glow); transform: translateY(-2px); }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .card-label { font-size: 0.74rem; font-weight: 600; color: var(--text-sub); }
+    .card-val { font-family: 'Space Grotesk', sans-serif; font-size: 1.85rem; font-weight: 700; line-height: 1.1; }
+    .card-unit { font-size: 0.68rem; color: var(--text-dim); margin-top: 4px; }
 
-    .brand-title p {
-      font-size: 0.72rem;
-      color: var(--text-sub);
-    }
-
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--border-bio);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--alert-red);
-      box-shadow: 0 0 10px var(--alert-red);
-      transition: all 0.3s;
-    }
-
-    .status-pill.connected .status-dot {
-      background: var(--bio-green);
-      box-shadow: 0 0 12px var(--bio-green);
-      animation: pulse-bio 2s infinite ease-in-out;
-    }
-
-    @keyframes pulse-bio {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
-    }
-
-    /* Tab Controls */
-    .nav-tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      background: rgba(6, 15, 13, 0.8);
-      border: 1px solid var(--border-bio);
-      padding: 6px;
-      border-radius: 12px;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-sub);
-      padding: 10px 14px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.25s ease;
-    }
-
-    .tab-btn:hover {
-      color: var(--text-main);
-      background: rgba(20, 184, 166, 0.1);
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, rgba(20, 184, 166, 0.25), rgba(16, 185, 129, 0.2));
-      color: #fff;
-      border: 1px solid var(--border-glow);
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.15);
-    }
-
-    /* Tab Contents */
-    .tab-panel {
-      display: none;
-      flex-direction: column;
-      gap: 14px;
-      width: 100%;
-    }
-
-    .tab-panel.active {
-      display: flex;
-    }
-
-    /* Banner Kualitas Bioreaktor (Fluid Wide) */
-    .bio-quality-banner {
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border-bio);
-      border-radius: 16px;
-      padding: 16px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .bio-quality-banner:hover {
-      border-color: var(--border-glow);
-      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.12);
-    }
-
-    .quality-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .quality-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-sub);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .quality-verdict {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--bio-green);
-    }
-
-    .biotrack {
-      position: relative;
-      height: 14px;
-      border-radius: 999px;
-      background: linear-gradient(to right, #ef4444 0%, #f59e0b 45%, #10b981 85%);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
-      margin: 6px 0;
-    }
-
-    .biotrack-indicator {
-      position: absolute;
-      top: -5px;
-      width: 24px;
-      height: 24px;
-      background: #ffffff;
-      border: 3px solid #061714;
-      border-radius: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
-      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      left: 0%;
-    }
-
-    .biotrack-ticks {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.7rem;
-      color: var(--text-dim);
-    }
-
-    /* Grid Metrik Utama: Responsif Penuh */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      width: 100%;
-    }
-
-    .bio-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--border-bio);
-      border-radius: 14px;
-      padding: 16px 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .bio-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: transparent;
-      transition: all 0.3s;
-    }
-
-    .bio-card:hover {
-      background: var(--card-hover);
-      border-color: var(--border-glow);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
-    }
-
-    .bio-card.ph:hover::before { background: var(--ph-cyan); }
-    .bio-card.tds:hover::before { background: var(--tds-emerald); }
-    .bio-card.temp:hover::before { background: var(--temp-amber); }
-    .bio-card.n:hover::before { background: var(--n-purple); }
-    .bio-card.p:hover::before { background: var(--p-pink); }
-    .bio-card.k:hover::before { background: var(--k-gold); }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .card-label {
-      font-size: 0.76rem;
-      font-weight: 600;
-      color: var(--text-sub);
-    }
-
-    .card-badge {
-      font-size: 0.65rem;
-      padding: 2px 6px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-dim);
-    }
-
-    .card-val {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 2rem;
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .card-unit {
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    .ph .card-val { color: var(--ph-cyan); text-shadow: 0 0 16px rgba(56, 189, 248, 0.2); }
-    .tds .card-val { color: var(--tds-emerald); text-shadow: 0 0 16px rgba(52, 211, 153, 0.2); }
-    .temp .card-val { color: var(--temp-amber); text-shadow: 0 0 16px rgba(245, 158, 11, 0.2); }
+    .ph .card-val { color: var(--ph-cyan); }
+    .tds .card-val { color: var(--tds-emerald); }
+    .temp .card-val { color: var(--temp-amber); }
     .n .card-val { color: var(--n-purple); }
     .p .card-val { color: var(--p-pink); }
     .k .card-val { color: var(--k-gold); }
 
-    /* Baris Status Mikroba & Headspace */
-    .microbe-strip {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+    .microbe-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .strip-card { background: var(--card-bg); border: 1px solid var(--border-bio); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
 
-    .strip-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-bio);
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.82rem;
-      transition: all 0.2s;
-    }
+    .chart-section { background: var(--card-bg); border: 1px solid var(--border-bio); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .chart-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; background: rgba(6, 14, 12, 0.7); padding: 8px; border-radius: 8px; }
+    .filter-chip { display: flex; align-items: center; gap: 5px; padding: 6px 10px; border-radius: 6px; background: rgba(18, 38, 34, 0.6); font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+    .chart-canvas-box { position: relative; width: 100%; height: 440px; min-height: 280px; }
 
-    .strip-card:hover {
-      border-color: var(--border-glow);
-    }
+    .table-section { background: var(--card-bg); border: 1px solid var(--border-bio); border-radius: 14px; overflow: hidden; }
+    .table-scroll { overflow-x: auto; max-height: 480px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.74rem; text-align: left; }
+    th { background: rgba(11, 25, 22, 0.95); color: var(--text-sub); padding: 10px 12px; position: sticky; top: 0; border-bottom: 1px solid var(--border-bio); }
+    td { padding: 9px 12px; border-bottom: 1px solid rgba(20, 184, 166, 0.08); }
 
-    /* Bagian Tab Grafik */
-    .chart-section {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--border-bio);
-      border-radius: 16px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      flex: 1;
-    }
+    .sheets-panel { background: var(--card-bg); border: 1px solid var(--border-bio); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; max-width: 760px; margin: 0 auto; width: 100%; }
+    .btn-action { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-align: center; text-decoration: none; }
+    .btn-action.btn-outline { background: rgba(18, 38, 34, 0.8); border: 1px solid var(--border-bio); }
 
-    .chart-filter-bar {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-      background: rgba(6, 14, 12, 0.7);
-      padding: 8px;
-      border-radius: 10px;
-      border: 1px solid var(--border-bio);
-    }
+    footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; font-size: 0.7rem; color: var(--text-dim); }
 
-    .filter-chip {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 8px;
-      background: rgba(18, 38, 34, 0.6);
-      font-size: 0.76rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid transparent;
-      user-select: none;
-      transition: all 0.2s;
-    }
-
-    .filter-chip:hover {
-      background: rgba(20, 184, 166, 0.2);
-    }
-
-    .chart-canvas-box {
-      position: relative;
-      width: 100%;
-      height: 480px; /* Full visual height on desktop */
-      min-height: 280px;
-    }
-
-    /* Tabel Riwayat */
-    .table-section {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--border-bio);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .table-scroll {
-      overflow-x: auto;
-      max-height: 520px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.75rem;
-      text-align: left;
-    }
-
-    th {
-      background: rgba(11, 25, 22, 0.95);
-      color: var(--text-sub);
-      padding: 12px 14px;
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      border-bottom: 1px solid var(--border-bio);
-      white-space: nowrap;
-    }
-
-    td {
-      padding: 11px 14px;
-      border-bottom: 1px solid rgba(20, 184, 166, 0.08);
-      white-space: nowrap;
-    }
-
-    tr:hover td {
-      background: rgba(20, 184, 166, 0.06);
-    }
-
-    /* Tab Integrasi Sheets */
-    .sheets-panel {
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--border-bio);
-      border-radius: 16px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 800px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .sheets-box-info {
-      background: rgba(6, 15, 13, 0.7);
-      border: 1px solid var(--border-bio);
-      border-radius: 12px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .btn-action {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #fff;
-      border: none;
-      padding: 14px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.25s;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-      text-decoration: none;
-    }
-
-    .btn-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
-    }
-
-    .btn-outline {
-      background: rgba(18, 38, 34, 0.8);
-      border: 1px solid var(--border-bio);
-      color: var(--text-main);
-      box-shadow: none;
-    }
-
-    .btn-outline:hover {
-      background: rgba(20, 184, 166, 0.2);
-    }
-
-    /* Footer */
-    footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 4px;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-
-    /* Mobile Responsive Adaptation */
     @media (max-width: 768px) {
-      body { padding: 10px; }
-      header { padding: 12px 14px; flex-direction: column; align-items: flex-start; gap: 10px; }
-      .brand-group { width: 100%; justify-content: space-between; }
-      .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-      .card-val { font-size: 1.55rem; }
-      .chart-canvas-box { height: 300px; }
+      header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .card-val { font-size: 1.45rem; }
+      .chart-canvas-box { height: 280px; }
       .microbe-strip { grid-template-columns: 1fr; }
-      .nav-tabs { gap: 4px; padding: 4px; }
-      .tab-btn { font-size: 0.74rem; padding: 8px 4px; }
+      .tab-btn { font-size: 0.72rem; padding: 8px 4px; }
     }
   </style>
+
+  <!-- PENGATUR TAB MANDIRI (Aman dari ReferenceError) -->
+  <script>
+    function switchTab(tabId, evt) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      if (evt && evt.currentTarget) {
+        evt.currentTarget.classList.add('active');
+      } else {
+        const btn = document.querySelector(`.tab-btn[onclick*="${tabId}"]`);
+        if (btn) btn.classList.add('active');
+      }
+      const panel = document.getElementById(tabId);
+      if (panel) panel.classList.add('active');
+      if (tabId === 'tab-chart' && window.bioChart) {
+        window.bioChart.resize();
+      }
+    }
+    window.switchTab = switchTab;
+  </script>
 </head>
 <body>
 
   <div class="dashboard-wrapper">
-    <!-- Top Header -->
     <header>
       <div class="brand-group">
         <div class="vessel-icon">&#9879;</div>
         <div class="brand-title">
-          <h1>BIOREAKTOR 350L <span style="font-size: 0.7rem; color: var(--bio-green); font-weight: 500; border: 1px solid var(--border-bio); padding: 1px 6px; border-radius: 4px;">POC FERMENTER</span></h1>
+          <h1>BIOREAKTOR 350L <span style="font-size: 0.68rem; color: var(--bio-green); border: 1px solid var(--border-bio); padding: 1px 6px; border-radius: 4px;">POC FERMENTER</span></h1>
           <p>Real-Time Kinetics & Microbiological Telemetry System</p>
         </div>
       </div>
@@ -587,7 +153,6 @@
       </div>
     </header>
 
-    <!-- Navigasi Tab -->
     <div class="nav-tabs">
       <button class="tab-btn active" onclick="switchTab('tab-live', event)">Live Telemetri</button>
       <button class="tab-btn" onclick="switchTab('tab-chart', event)">Grafik Interaktif</button>
@@ -595,14 +160,11 @@
       <button class="tab-btn" onclick="switchTab('tab-sheets', event)">Database Sheets</button>
     </div>
 
-    <!-- TAB 1: LIVE MONITORING -->
+    <!-- TAB 1: LIVE -->
     <div id="tab-live" class="tab-panel active">
-      <!-- Banner Kualitas Fermentasi (Fluid) -->
       <div class="bio-quality-banner">
         <div class="quality-meta">
-          <div class="quality-title">
-            <span style="font-size: 1rem;">&#129514;</span> Indeks Kualitas Fermentasi Asidogenesis
-          </div>
+          <div class="quality-title">&#129514; Indeks Kualitas Fermentasi Asidogenesis</div>
           <div id="quality-verdict" class="quality-verdict">Menganalisis...</div>
         </div>
         <div class="biotrack">
@@ -615,98 +177,61 @@
         </div>
       </div>
 
-      <!-- Fluid Cards Grid -->
       <div class="dashboard-grid">
         <div class="bio-card ph">
-          <div class="card-top">
-            <span class="card-label">Keasaman (pH)</span>
-            <span class="card-badge">Target: 3.8-4.2</span>
-          </div>
+          <div class="card-top"><span class="card-label">Keasaman (pH)</span></div>
           <div id="val-ph" class="card-val">--</div>
-          <div class="card-unit">pH Units (Kompensasi Suhu)</div>
+          <div class="card-unit">pH Units</div>
         </div>
-
         <div class="bio-card tds">
-          <div class="card-top">
-            <span class="card-label">Padatan Terlarut (TDS)</span>
-            <span class="card-badge">Elektrolit POC</span>
-          </div>
+          <div class="card-top"><span class="card-label">Padatan Terlarut (TDS)</span></div>
           <div id="val-tds" class="card-val">--</div>
-          <div class="card-unit">ppm (Part Per Million)</div>
+          <div class="card-unit">ppm</div>
         </div>
-
         <div class="bio-card temp">
-          <div class="card-top">
-            <span class="card-label">Suhu Mesofilik</span>
-            <span class="card-badge">Kinetika Reaktor</span>
-          </div>
+          <div class="card-top"><span class="card-label">Suhu Mesofilik</span></div>
           <div id="val-temp" class="card-val">--</div>
-          <div class="card-unit">&deg;C (Derajat Celcius)</div>
+          <div class="card-unit">&deg;C</div>
         </div>
-
         <div class="bio-card n">
-          <div class="card-top">
-            <span class="card-label">Nitrogen Bebas (N)</span>
-            <span class="card-badge">Ammonium/Nitrat</span>
-          </div>
+          <div class="card-top"><span class="card-label">Nitrogen Bebas (N)</span></div>
           <div id="val-n" class="card-val">--</div>
-          <div class="card-unit">mg/kg Konsentrasi POC</div>
+          <div class="card-unit">mg/kg</div>
         </div>
-
         <div class="bio-card p">
-          <div class="card-top">
-            <span class="card-label">Fosfor Tersedia (P)</span>
-            <span class="card-badge">Ortofosfat</span>
-          </div>
+          <div class="card-top"><span class="card-label">Fosfor Tersedia (P)</span></div>
           <div id="val-p" class="card-val">--</div>
-          <div class="card-unit">mg/kg Konsentrasi POC</div>
+          <div class="card-unit">mg/kg</div>
         </div>
-
         <div class="bio-card k">
-          <div class="card-top">
-            <span class="card-label">Kalium Terlarut (K)</span>
-            <span class="card-badge">Ion Kalium K+</span>
-          </div>
+          <div class="card-top"><span class="card-label">Kalium Terlarut (K)</span></div>
           <div id="val-k" class="card-val">--</div>
-          <div class="card-unit">mg/kg Konsentrasi POC</div>
+          <div class="card-unit">mg/kg</div>
         </div>
       </div>
 
-      <!-- Sekunder Strip -->
       <div class="microbe-strip">
         <div class="strip-card">
           <span style="color: var(--text-sub);">Konduktivitas Listrik (EC):</span>
-          <strong id="val-ec" style="color: var(--bio-teal); font-family: 'Space Grotesk', sans-serif;">-- µS/cm</strong>
+          <strong id="val-ec" style="color: var(--bio-teal);">-- µS/cm</strong>
         </div>
         <div class="strip-card">
-          <span style="color: var(--text-sub);">Kelembapan Headspace Reaktor:</span>
-          <strong id="val-hum" style="color: var(--bio-green); font-family: 'Space Grotesk', sans-serif;">-- %</strong>
+          <span style="color: var(--text-sub);">Kelembapan Headspace:</span>
+          <strong id="val-hum" style="color: var(--bio-green);">-- %</strong>
         </div>
       </div>
     </div>
 
-    <!-- TAB 2: GRAFIK MULTI-VARIABEL INTERAKTIF -->
+    <!-- TAB 2: GRAFIK -->
     <div id="tab-chart" class="tab-panel">
       <div class="chart-section">
         <div class="chart-filter-bar">
-          <label class="filter-chip" style="color: var(--ph-cyan);">
-            <input type="checkbox" id="chk-ph" checked onchange="toggleVar(0, this.checked)"> pH Reaktor
-          </label>
-          <label class="filter-chip" style="color: var(--tds-emerald);">
-            <input type="checkbox" id="chk-tds" checked onchange="toggleVar(1, this.checked)"> TDS (ppm)
-          </label>
-          <label class="filter-chip" style="color: var(--temp-amber);">
-            <input type="checkbox" id="chk-temp" checked onchange="toggleVar(2, this.checked)"> Suhu (&deg;C)
-          </label>
-          <label class="filter-chip" style="color: var(--n-purple);">
-            <input type="checkbox" id="chk-n" onchange="toggleVar(3, this.checked)"> Nitrogen (N)
-          </label>
-          <label class="filter-chip" style="color: var(--p-pink);">
-            <input type="checkbox" id="chk-p" onchange="toggleVar(4, this.checked)"> Fosfor (P)
-          </label>
-          <label class="filter-chip" style="color: var(--k-gold);">
-            <input type="checkbox" id="chk-k" onchange="toggleVar(5, this.checked)"> Kalium (K)
-          </label>
+          <label class="filter-chip" style="color: var(--ph-cyan);"><input type="checkbox" id="chk-ph" checked onchange="toggleVar(0, this.checked)"> pH</label>
+          <label class="filter-chip" style="color: var(--tds-emerald);"><input type="checkbox" id="chk-tds" checked onchange="toggleVar(1, this.checked)"> TDS</label>
+          <label class="filter-chip" style="color: var(--temp-amber);"><input type="checkbox" id="chk-temp" checked onchange="toggleVar(2, this.checked)"> Suhu</label>
+          <label class="filter-chip" style="color: var(--n-purple);"><input type="checkbox" id="chk-n" onchange="toggleVar(3, this.checked)"> N</label>
+          <label class="filter-chip" style="color: var(--p-pink);"><input type="checkbox" id="chk-p" onchange="toggleVar(4, this.checked)"> P</label>
+          <label class="filter-chip" style="color: var(--k-gold);"><input type="checkbox" id="chk-k" onchange="toggleVar(5, this.checked)"> K</label>
         </div>
         <div class="chart-canvas-box">
           <canvas id="bioChart"></canvas>
@@ -714,4 +239,250 @@
       </div>
     </div>
 
-    <!-- TAB 3: TABEL RIWAYAT TELEMETRI -->
+    <!-- TAB 3: TABEL -->
+    <div id="tab-table" class="tab-panel">
+      <div class="table-section">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Waktu Telemetri</th>
+                <th>pH</th>
+                <th>TDS</th>
+                <th>Suhu</th>
+                <th>EC</th>
+                <th>N</th>
+                <th>P</th>
+                <th>K</th>
+                <th>Status Kualitas</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <tr><td colspan="9" style="text-align: center; color: var(--text-dim); padding: 20px;">Menunggu sinkronisasi paket data dari ESP-32U...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: SHEETS -->
+    <div id="tab-sheets" class="tab-panel">
+      <div class="sheets-panel">
+        <div><strong>Integrasi Database Google Sheets</strong></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(6, 15, 13, 0.7); border: 1px solid var(--border-bio); border-radius: 8px; padding: 12px;">
+          <span>Auto-Log Berkala (Tiap 1 Menit)</span>
+          <input type="checkbox" id="auto-log" checked style="width: 18px; height: 18px; cursor: pointer;">
+        </div>
+        <button class="btn-action" onclick="sendToSheets(true)">Simpan Snapshot Sekarang ke Sheet</button>
+        <a class="btn-action btn-outline" href="https://docs.google.com/spreadsheets/d/1miHO-ZvgZHzw1oTi-Jr9r3E1TvhfVchW6x-0WDoWw90/edit" target="_blank">Buka Google Spreadsheet</a>
+        <div id="sheets-feedback" style="font-size: 0.75rem; text-align: center; color: var(--text-dim);">Database siap menerima data.</div>
+      </div>
+    </div>
+
+    <footer>
+      <span id="footer-update">Data Terakhir: Menunggu ESP-32U...</span>
+      <span>EMQX Cloud TLS / 350L Digester</span>
+    </footer>
+  </div>
+
+  <!-- MODUL TELEMETRI & MQTT RUNNER -->
+  <script>
+    console.log("[Bioreaktor] Modul telemetri utama diaktifkan.");
+
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyj08Y1rPlbDbE6q-kmPqrSRObgUlpQAgaqJDj4FmQMmp7cvV938smZ23gHz6549B4w/exec";
+    const host = "a01ed2fd.ala.us-east-1.emqxsl.com";
+    const port = 8084;
+    const topic = "bioreaktor/data";
+
+    let historyRecords = [];
+    let curData = { ph: null, tds: null, temp: null, hum: null, ec: null, n: null, p: null, k: null };
+
+    // Inisialisasi Grafik
+    const ctx = document.getElementById('bioChart').getContext('2d');
+    window.bioChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'pH', borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.08)', data: [], yAxisID: 'y_ph', tension: 0.25, pointRadius: 2, fill: true },
+          { label: 'TDS (ppm)', borderColor: '#34d399', data: [], yAxisID: 'y_tds', tension: 0.25, pointRadius: 2 },
+          { label: 'Suhu (°C)', borderColor: '#f59e0b', data: [], yAxisID: 'y_temp', tension: 0.25, pointRadius: 2 },
+          { label: 'N', borderColor: '#c084fc', data: [], yAxisID: 'y_npk', tension: 0.25, pointRadius: 2, hidden: true },
+          { label: 'P', borderColor: '#f472b6', data: [], yAxisID: 'y_npk', tension: 0.25, pointRadius: 2, hidden: true },
+          { label: 'K', borderColor: '#facc15', data: [], yAxisID: 'y_npk', tension: 0.25, pointRadius: 2, hidden: true }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(20, 184, 166, 0.08)' } },
+          y_ph: { type: 'linear', position: 'left', min: 2, max: 8, ticks: { color: '#38bdf8', font: { size: 10 } } },
+          y_tds: { type: 'linear', position: 'right', min: 0, max: 1500, ticks: { color: '#34d399', font: { size: 10 } }, grid: { display: false } },
+          y_temp: { type: 'linear', display: false, min: 15, max: 50 },
+          y_npk: { type: 'linear', display: false, min: 0, max: 400 }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+
+    function toggleVar(idx, show) {
+      window.bioChart.data.datasets[idx].hidden = !show;
+      window.bioChart.update();
+    }
+
+    function evaluateQuality(ph) {
+      if (!ph) return { text: "Menunggu Telemetri", pct: 0, color: "#64748b" };
+      if (ph >= 3.6 && ph <= 4.4) return { text: "Optimal (Fermentasi Efektif)", pct: 92, color: "var(--bio-green)" };
+      if ((ph >= 3.2 && ph < 3.6) || (ph > 4.4 && ph <= 5.0)) return { text: "Transisi Kinetika", pct: 52, color: "var(--alert-yellow)" };
+      return { text: "Kritis (Perlu Tindakan)", pct: 15, color: "var(--alert-red)" };
+    }
+
+    // Inisialisasi Koneksi MQTT
+    console.log("[Bioreaktor] Menghubungkan ke EMQX broker...");
+    const mqttClient = mqtt.connect(`wss://${host}:${port}/mqtt`, {
+      clientId: "Bioreaktor_Web_" + Math.random().toString(16).substring(2, 8),
+      username: "busserchan",
+      password: "whitewhitE314",
+      clean: true,
+      connectTimeout: 5000,
+      reconnectPeriod: 3000
+    });
+
+    mqttClient.on('connect', () => {
+      console.log("[Bioreaktor] Sukses terhubung ke broker EMQX Cloud!");
+      const badge = document.getElementById('mqtt-badge');
+      const text = document.getElementById('mqtt-text');
+      badge.classList.add('connected');
+      text.textContent = "Broker Online (WSS 8084)";
+      mqttClient.subscribe(topic);
+    });
+
+    mqttClient.on('error', (err) => {
+      console.error("[Bioreaktor] MQTT Error:", err);
+      const text = document.getElementById('mqtt-text');
+      text.textContent = "Eror: " + (err.message || "Gagal Autentikasi");
+    });
+
+    mqttClient.on('close', () => {
+      const badge = document.getElementById('mqtt-badge');
+      const text = document.getElementById('mqtt-text');
+      badge.classList.remove('connected');
+      text.textContent = "Koneksi Terputus (Offline)";
+    });
+
+    mqttClient.on('message', (t, payload) => {
+      try {
+        const d = JSON.parse(payload.toString());
+        const timeNow = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        curData = {
+          ph: parseFloat(d.ph),
+          tds: parseInt(d.tds),
+          temp: parseFloat(d.temp),
+          hum: parseFloat(d.hum),
+          ec: parseInt(d.ec),
+          n: parseInt(d.n),
+          p: parseInt(d.p),
+          k: parseInt(d.k)
+        };
+
+        document.getElementById('val-ph').textContent = curData.ph.toFixed(2);
+        document.getElementById('val-tds').textContent = curData.tds;
+        document.getElementById('val-temp').textContent = curData.temp.toFixed(1);
+        document.getElementById('val-hum').textContent = curData.hum.toFixed(1) + " %";
+        document.getElementById('val-ec').textContent = curData.ec + " µS/cm";
+        document.getElementById('val-n').textContent = curData.n;
+        document.getElementById('val-p').textContent = curData.p;
+        document.getElementById('val-k').textContent = curData.k;
+
+        const q = evaluateQuality(curData.ph);
+        const qVerdict = document.getElementById('quality-verdict');
+        qVerdict.textContent = q.text;
+        qVerdict.style.color = q.color;
+        document.getElementById('quality-needle').style.left = q.pct + "%";
+
+        // Update Grafik
+        if (window.bioChart.data.labels.length > 25) {
+          window.bioChart.data.labels.shift();
+          window.bioChart.data.datasets.forEach(ds => ds.data.shift());
+        }
+        window.bioChart.data.labels.push(timeNow);
+        window.bioChart.data.datasets[0].data.push(curData.ph);
+        window.bioChart.data.datasets[1].data.push(curData.tds);
+        window.bioChart.data.datasets[2].data.push(curData.temp);
+        window.bioChart.data.datasets[3].data.push(curData.n);
+        window.bioChart.data.datasets[4].data.push(curData.p);
+        window.bioChart.data.datasets[5].data.push(curData.k);
+        window.bioChart.update();
+
+        // Update Tabel
+        historyRecords.unshift({ time: timeNow, ...curData, status: q.text });
+        if (historyRecords.length > 30) historyRecords.pop();
+
+        document.getElementById('table-body').innerHTML = historyRecords.map(r => `
+          <tr>
+            <td>${r.time}</td>
+            <td style="color:var(--ph-cyan); font-weight:700;">${r.ph}</td>
+            <td style="color:var(--tds-emerald);">${r.tds}</td>
+            <td style="color:var(--temp-amber);">${r.temp}</td>
+            <td style="color:var(--bio-teal);">${r.ec}</td>
+            <td style="color:var(--n-purple);">${r.n}</td>
+            <td style="color:var(--p-pink);">${r.p}</td>
+            <td style="color:var(--k-gold);">${r.k}</td>
+            <td><span style="font-size:0.7rem; padding:2px 8px; border-radius:4px; background:rgba(20,184,166,0.15); color:var(--text-main);">${r.status}</span></td>
+          </tr>
+        `).join('');
+
+        document.getElementById('footer-update').textContent = `Sinkronisasi Terakhir: ${timeNow}`;
+      } catch (err) {
+        console.error("Format data JSON error:", err);
+      }
+    });
+
+    async function sendToSheets(manual = false) {
+      const fb = document.getElementById('sheets-feedback');
+      if (curData.ph === null) {
+        fb.textContent = "Data telemetri belum diterima.";
+        return;
+      }
+      fb.textContent = "Menyimpan ke Google Spreadsheet...";
+      fb.style.color = "var(--text-sub)";
+
+      const q = evaluateQuality(curData.ph);
+      const payload = {
+        timestamp: new Date().toLocaleString('id-ID'),
+        ph: curData.ph,
+        tds: curData.tds,
+        suhu: curData.temp,
+        kelembapan: curData.hum,
+        ec: curData.ec,
+        n: curData.n,
+        p: curData.p,
+        k: curData.k,
+        status: q.text
+      };
+
+      try {
+        await fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        fb.textContent = `Tersimpan di Sheet (${new Date().toLocaleTimeString()})`;
+        fb.style.color = "var(--bio-green)";
+      } catch (e) {
+        fb.textContent = "Koneksi Google Apps Script gagal: " + e.message;
+        fb.style.color = "var(--alert-red)";
+      }
+    }
+
+    setInterval(() => {
+      if (document.getElementById('auto-log').checked) {
+        sendToSheets(false);
+      }
+    }, 60000);
+  </script>
+</body>
+</html>
